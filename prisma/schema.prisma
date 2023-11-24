@@ -1,0 +1,39 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Organisers {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+}
+
+model Coordinators {  
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+}
+
+model Volunteers {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+}
+
+model Events {
+  eventID String @id @default(uuid())
+  name String
+  description String @db.Text
+  rules  String
+  eventImageURL String
+}
+
+model Participant {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  registrationNumber String @unique @db.VarChar(10)
+  branch String
+  year Int
+}
