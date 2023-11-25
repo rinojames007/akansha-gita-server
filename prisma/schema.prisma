@@ -1,39 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Organisers {
-  id Int @id @default(autoincrement())
-  email String @unique
-  password String
-}
-
-model Coordinators {  
-  id Int @id @default(autoincrement())
-  email String @unique
-  password String
-}
-
-model Volunteers {
-  id Int @id @default(autoincrement())
-  email String @unique
-  password String
-}
-
-model Events {
+model Event {
   eventID String @id @default(uuid())
   name String
   description String @db.Text
+  itemsRequired String 
   rules  String
   eventImageURL String
+  eventTime DateTime
+  participants Participant[] 
+}
+
+model Organiser {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+}
+
+model Coordinator {  
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+}
+
+model Volunteer {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
 }
 
 model Participant {
   id Int @id @default(autoincrement())
   email String @unique
   password String
-  registrationNumber String @unique @db.VarChar(10)
+  course String 
   branch String
   year Int
+  rollNumber String @unique @db.VarChar(10)
+  gender String 
+  event Event @relation(fields: [eventID], references: [id])
+}
+
+model User {
+  email String @unique
+  password String
 }

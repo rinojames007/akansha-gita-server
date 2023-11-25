@@ -13,13 +13,13 @@ router.use((req, res, next) => {
   next();
 });
 
-router.post("/signup", (req, res) => {
+router.post(`/${process.env.VOLUNTEER_ROUTE}/signup`, (req, res) => {
   try {
     const { email, password } = req.body;
     const saltRounds = 6;
     bcrypt.genSalt(saltRounds, function (err, salt) {
       bcrypt.hash(password, salt, async function (err, hash) {
-        const newUser = await prisma.users.create({
+        const newUser = await prisma.volunteers.create({
           data: {
             email: email,
             password: hash,
@@ -39,9 +39,9 @@ router.post("/signup", (req, res) => {
   }
 });
 
-router.post("/signin", async (req, res) => {
+router.post(`/${process.env.VOLUNTEER_ROUTE}/signup`, async (req, res) => {
   const { email, password } = req.body;
-  const user = await prisma.users.findUnique({
+  const user = await prisma.volunteers.findUnique({
     where: {
       email: email
     },
