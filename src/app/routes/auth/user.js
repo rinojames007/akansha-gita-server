@@ -13,13 +13,13 @@ router.use((req, res, next) => {
   next();
 });
 
-router.post(`/${process.env.COORDINATOR_ROUTE}/signup`, (req, res) => {
+router.post("/signup", (req, res) => {
   try {
     const { email, password } = req.body;
     const saltRounds = 6;
     bcrypt.genSalt(saltRounds, function (err, salt) {
       bcrypt.hash(password, salt, async function (err, hash) {
-        const newUser = await prisma.coordinators.create({
+        const newUser = await prisma.user.create({
           data: {
             email: email,
             password: hash,
@@ -39,9 +39,9 @@ router.post(`/${process.env.COORDINATOR_ROUTE}/signup`, (req, res) => {
   }
 });
 
-router.post(`/${process.env.COORDINATOR_ROUTE}/signin`, async (req, res) => {
+router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
-  const user = await prisma.coordinators.findUnique({
+  const user = await prisma.users.findUnique({
     where: {
       email: email
     },
