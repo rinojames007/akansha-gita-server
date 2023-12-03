@@ -8,22 +8,28 @@ datasource db {
 }
 
 model Event {
-  id               String          @id @default(uuid())
-  day              EventDay          
-  name             String
-  description      String          @db.Text
-  itemsRequired    String
-  rules            String
-  eventImageURL    String
-  eventTime        DateTime
-  participants     Participant[]
-  organisers       OrganiserEvent[]
-  incharges        InchargeEvent[]
-  coordinators     CoordinatorEvent[]
-  volunteers       VolunteerEvent[]
-  attendances      EventAttendance[]
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @default(now())
+  id            String             @id @default(uuid())
+  day           EventDay
+  name          String
+  description   String             @db.Text
+  gender        String             @default("")
+  itemsRequired String
+  rules         String
+  eventImageURL String
+  eventTime     DateTime
+  participants  Participant[]
+  organisers    OrganiserEvent[]
+  incharges     InchargeEvent[]
+  coordinators  CoordinatorEvent[]
+  volunteers    VolunteerEvent[]
+  attendances   EventAttendance[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}
+
+enum Gender {
+  boys
+  girls
 }
 
 enum EventDay {
@@ -33,16 +39,16 @@ enum EventDay {
 }
 
 model Incharge {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
+  id       Int             @id @default(autoincrement())
+  email    String          @unique
   password String
   events   InchargeEvent[]
 }
 
 model InchargeEvent {
   id         Int      @id @default(autoincrement())
-  incharge   Incharge  @relation(fields: [inchargeID], references: [id])
-  event      Event     @relation(fields: [eventID], references: [id])
+  incharge   Incharge @relation(fields: [inchargeID], references: [id])
+  event      Event    @relation(fields: [eventID], references: [id])
   inchargeID Int
   eventID    String
 
@@ -50,9 +56,9 @@ model InchargeEvent {
 }
 
 model CoordinatorEvent {
-  id            Int           @id @default(autoincrement())
-  coordinator   Coordinator  @relation(fields: [coordinatorID], references: [id])
-  event         Event         @relation(fields: [eventID], references: [id])
+  id            Int         @id @default(autoincrement())
+  coordinator   Coordinator @relation(fields: [coordinatorID], references: [id])
+  event         Event       @relation(fields: [eventID], references: [id])
   coordinatorID Int
   eventID       String
 
@@ -60,68 +66,70 @@ model CoordinatorEvent {
 }
 
 model Organiser {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
+  id       Int              @id @default(autoincrement())
+  email    String           @unique
   password String
   events   OrganiserEvent[]
 }
 
 model OrganiserEvent {
-  id          Int         @id @default(autoincrement())
-  organiser   Organiser   @relation(fields: [organiserID], references: [id])
-  event      Event       @relation(fields: [eventID], references: [id])
+  id          Int       @id @default(autoincrement())
+  organiser   Organiser @relation(fields: [organiserID], references: [id])
+  event       Event     @relation(fields: [eventID], references: [id])
   organiserID Int
   eventID     String
 }
 
-model Coordinator {  
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
+model Coordinator {
+  id       Int                @id @default(autoincrement())
+  email    String             @unique
   password String
   events   CoordinatorEvent[]
 }
 
 model Volunteer {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
+  id       Int              @id @default(autoincrement())
+  email    String           @unique
   password String
   events   VolunteerEvent[]
 }
 
 model VolunteerEvent {
-  id            Int        @id @default(autoincrement())
-  volunteer     Volunteer  @relation(fields: [volunteerID], references: [id])
-  event         Event      @relation(fields: [eventID], references: [id])
-  volunteerID   Int
-  eventID       String
+  id          Int       @id @default(autoincrement())
+  volunteer   Volunteer @relation(fields: [volunteerID], references: [id])
+  event       Event     @relation(fields: [eventID], references: [id])
+  volunteerID Int
+  eventID     String
 
   @@unique([volunteerID, eventID])
 }
 
 model Participant {
-  id         Int             @id @default(autoincrement())
-  email      String          @unique
-  password   String
-  course     String
-  branch     String
-  year       Int
-  rollNumber String          @unique @db.VarChar(10)
-  gender     String
-  events     Event[]
+  id          Int               @id @default(autoincrement())
+  name        String            @unique
+  rollNumber  String            @unique @db.VarChar(10)
+  course      String
+  year        String
+  branch      String
+  gender      String
+  phone       Int
+  email       String
+  stay        String
+  events      Event[]
   attendances EventAttendance[]
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @default(now())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @default(now())
 }
 
 model EventAttendance {
-  id            Int             @id @default(autoincrement())
-  event         Event           @relation(fields: [eventID], references: [id])
-  participant   Participant     @relation(fields: [participantID], references: [id])
+  id            Int         @id @default(autoincrement())
+  event         Event       @relation(fields: [eventID], references: [id])
+  participant   Participant @relation(fields: [participantID], references: [id])
   participantID Int
   eventID       String
-  attended      Boolean         @default(false)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @default(now())
+  attended      Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now())
 
   @@unique([participantID, eventID])
 }

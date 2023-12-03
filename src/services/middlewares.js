@@ -10,9 +10,8 @@ export const userAuthentication = (req, res, next) => {
       if (err) {
         res.sendStatus(403);
       }
-      console.log("current: ", req.user);
       req.user = user;
-      console.log("after: ", req.user);
+      next()
     });
   }
 };

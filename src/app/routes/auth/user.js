@@ -1,6 +1,6 @@
 import * as express from "express";
 import bcrypt from "bcrypt";
-import { PrismaClient } from "@prisma/client";
+import {PrismaClient} from "@prisma/client";
 import jwt from "jsonwebtoken";
 
 const router = express.Router();
@@ -26,7 +26,7 @@ router.post("/signup", (req, res) => {
           },
         });
         if (newUser) {
-          const token = jwt.sign(email, SECRET);
+          const token = jwt.sign(email, SECRET, { expiresIn: '2 days' });
           res.status(200).json({
             message: "user added successfully",
             token: token,
@@ -41,7 +41,7 @@ router.post("/signup", (req, res) => {
 
 router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
-  const user = await prisma.users.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       email: email
     },
