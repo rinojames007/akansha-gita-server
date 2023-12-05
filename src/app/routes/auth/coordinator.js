@@ -1,11 +1,10 @@
 import * as express from "express";
 import bcrypt from "bcrypt";
-import { PrismaClient } from "@prisma/client";
+import {PrismaClient} from "@prisma/client";
 import jwt from "jsonwebtoken";
 
 const router = express.Router();
 const prisma = new PrismaClient();
-
 const SECRET = `${process.env.JWT_SECRET}`;
 
 router.use((req, res, next) => {
@@ -13,7 +12,7 @@ router.use((req, res, next) => {
   next();
 });
 
-router.post(`/${process.env.COORDINATOR_ROUTE}/signup`, (req, res) => {
+router.post("/signup", (req, res) => {
   try {
     const { email, password } = req.body;
     const saltRounds = 6;
@@ -26,7 +25,7 @@ router.post(`/${process.env.COORDINATOR_ROUTE}/signup`, (req, res) => {
           },
         });
         if (newUser) {
-          const token = jwt.sign(email, SECRET);
+          const token = jwt.sign(email, SECRET, { expiresIn: '2 days' });
           res.status(200).json({
             message: "user added successfully",
             token: token,
@@ -34,12 +33,15 @@ router.post(`/${process.env.COORDINATOR_ROUTE}/signup`, (req, res) => {
         }
       });
     });
+    res.status(401).json({
+      message: "email address already exists"
+    })
   } catch (error) {
     console.log("something broke ", e);
   }
 });
 
-router.post(`/${process.env.COORDINATOR_ROUTE}/signin`, async (req, res) => {
+router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
   const user = await prisma.coordinator.findUnique({
     where: {
@@ -52,7 +54,7 @@ router.post(`/${process.env.COORDINATOR_ROUTE}/signin`, async (req, res) => {
     if (result) {
       const token = jwt.sign(email, SECRET);
       res.status(200).json({
-        message: "user found successfully",
+        message: "login successfull",
         token: token,
       });
     } else {
@@ -61,6 +63,9 @@ router.post(`/${process.env.COORDINATOR_ROUTE}/signin`, async (req, res) => {
       });
     }
   }
+  res.status(401).json({
+    message: "failed to find user"
+  })
 });
 
 export default router;

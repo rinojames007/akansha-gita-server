@@ -2,7 +2,8 @@ import user from "./app/routes/auth/user.js";
 import organizer from "./app/routes/auth/organizer.js";
 import coordinator from "./app/routes/auth/coordinator.js";
 import volunteer from './app/routes/auth/volunteer.js';
-import event from "./app/routes/event/event.js"
+import eventCRUD from "./app/routes/event/eventCRUD.js"
+import ahwan from "./app/routes/event/ahwan.js"
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -19,7 +20,8 @@ app.use("/user", user);
 app.use("/organizer", organizer);
 app.use("/coordinator", coordinator);
 app.use("/volunteer", volunteer);
-app.use("/event", event);
+app.use("/event", eventCRUD);
+app.use("/ahwan", ahwan);
 
 
 app.listen(3000, () => {

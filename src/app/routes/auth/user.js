@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 
 const router = express.Router();
 const prisma = new PrismaClient();
-
 const SECRET = `${process.env.JWT_SECRET}`;
 
 router.use((req, res, next) => {
@@ -34,6 +33,9 @@ router.post("/signup", (req, res) => {
         }
       });
     });
+    res.status(401).json({
+      message: "email address already exists"
+    })
   } catch (error) {
     console.log("something broke ", e);
   }
@@ -52,7 +54,7 @@ router.post("/signin", async (req, res) => {
     if (result) {
       const token = jwt.sign(email, SECRET);
       res.status(200).json({
-        message: "user found successfully",
+        message: "login successful",
         token: token,
       });
     } else {
@@ -61,6 +63,9 @@ router.post("/signin", async (req, res) => {
       });
     }
   }
+  /*res.status(401).json({
+    message: "failed to find user"
+  })*/
 });
 
 export default router;

@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 
 const router = express.Router();
 const prisma = new PrismaClient();
-
 const SECRET = `${process.env.JWT_SECRET}`;
 
 router.use((req, res, next) => {
@@ -13,20 +12,20 @@ router.use((req, res, next) => {
   next();
 });
 
-router.post(`/${process.env.ORGANIZER_ROUTE}/signup`, (req, res) => {
+router.post(`/${process.env.INCHARGE_ROUTE}/signup`, (req, res) => {
   try {
     const { email, password } = req.body;
     const saltRounds = 6;
     bcrypt.genSalt(saltRounds, function (err, salt) {
       bcrypt.hash(password, salt, async function (err, hash) {
-        const newUser = await prisma.organisers.create({
+        const newUser = await prisma.incharge.create({
           data: {
             email: email,
             password: hash,
           },
         });
         if (newUser) {
-          const token = jwt.sign(email, SECRET);
+          const token = jwt.sign(email, SECRET, { expiresIn: '2 days' });
           res.status(200).json({
             message: "user added successfully",
             token: token,
@@ -42,9 +41,9 @@ router.post(`/${process.env.ORGANIZER_ROUTE}/signup`, (req, res) => {
   }
 });
 
-router.post(`/${process.env.ORGANIZER_ROUTE}/signin`, async (req, res) => {
+router.post(`/${process.env.INCHARGE_ROUTE}/signin`, async (req, res) => {
   const { email, password } = req.body;
-  const user = await prisma.organisers.findUnique({
+  const user = await prisma.incharge.findUnique({
     where: {
       email: email
     },
@@ -55,7 +54,7 @@ router.post(`/${process.env.ORGANIZER_ROUTE}/signin`, async (req, res) => {
     if (result) {
       const token = jwt.sign(email, SECRET);
       res.status(200).json({
-        message: "user found successfully",
+        message: "login successful",
         token: token,
       });
     } else {

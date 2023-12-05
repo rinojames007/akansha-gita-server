@@ -1,14 +1,22 @@
+-- CreateEnum
+CREATE TYPE "EventDay" AS ENUM ('ahwan', 'anwesh');
+
+-- CreateEnum
+CREATE TYPE "stayEvent" AS ENUM ('hosteller', 'dayboarder');
+
 -- CreateTable
 CREATE TABLE "Event" (
     "id" TEXT NOT NULL,
+    "day" "EventDay" NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "gender" TEXT NOT NULL DEFAULT '',
     "itemsRequired" TEXT NOT NULL,
     "rules" TEXT NOT NULL,
     "eventImageURL" TEXT NOT NULL,
     "eventTime" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Event_pkey" PRIMARY KEY ("id")
 );
@@ -38,15 +46,6 @@ CREATE TABLE "CoordinatorEvent" (
     "eventID" TEXT NOT NULL,
 
     CONSTRAINT "CoordinatorEvent_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "VolunteerEvent" (
-    "id" SERIAL NOT NULL,
-    "volunteerID" INTEGER NOT NULL,
-    "eventID" TEXT NOT NULL,
-
-    CONSTRAINT "VolunteerEvent_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -86,15 +85,27 @@ CREATE TABLE "Volunteer" (
 );
 
 -- CreateTable
+CREATE TABLE "VolunteerEvent" (
+    "id" SERIAL NOT NULL,
+    "volunteerID" INTEGER NOT NULL,
+    "eventID" TEXT NOT NULL,
+
+    CONSTRAINT "VolunteerEvent_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Participant" (
     "id" SERIAL NOT NULL,
-    "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
-    "course" TEXT NOT NULL,
-    "branch" TEXT NOT NULL,
-    "year" INTEGER NOT NULL,
+    "name" TEXT NOT NULL,
     "rollNumber" VARCHAR(10) NOT NULL,
+    "day" "EventDay" NOT NULL,
+    "course" TEXT NOT NULL,
+    "year" TEXT NOT NULL,
+    "branch" TEXT NOT NULL,
     "gender" TEXT NOT NULL,
+    "phone" INTEGER NOT NULL,
+    "email" TEXT NOT NULL,
+    "stay" "stayEvent" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -135,9 +146,6 @@ CREATE UNIQUE INDEX "InchargeEvent_inchargeID_eventID_key" ON "InchargeEvent"("i
 CREATE UNIQUE INDEX "CoordinatorEvent_coordinatorID_eventID_key" ON "CoordinatorEvent"("coordinatorID", "eventID");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "VolunteerEvent_volunteerID_eventID_key" ON "VolunteerEvent"("volunteerID", "eventID");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Organiser_email_key" ON "Organiser"("email");
 
 -- CreateIndex
@@ -147,7 +155,10 @@ CREATE UNIQUE INDEX "Coordinator_email_key" ON "Coordinator"("email");
 CREATE UNIQUE INDEX "Volunteer_email_key" ON "Volunteer"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Participant_email_key" ON "Participant"("email");
+CREATE UNIQUE INDEX "VolunteerEvent_volunteerID_eventID_key" ON "VolunteerEvent"("volunteerID", "eventID");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Participant_name_key" ON "Participant"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Participant_rollNumber_key" ON "Participant"("rollNumber");
@@ -177,16 +188,16 @@ ALTER TABLE "CoordinatorEvent" ADD CONSTRAINT "CoordinatorEvent_coordinatorID_fk
 ALTER TABLE "CoordinatorEvent" ADD CONSTRAINT "CoordinatorEvent_eventID_fkey" FOREIGN KEY ("eventID") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "VolunteerEvent" ADD CONSTRAINT "VolunteerEvent_volunteerID_fkey" FOREIGN KEY ("volunteerID") REFERENCES "Volunteer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "VolunteerEvent" ADD CONSTRAINT "VolunteerEvent_eventID_fkey" FOREIGN KEY ("eventID") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "OrganiserEvent" ADD CONSTRAINT "OrganiserEvent_organiserID_fkey" FOREIGN KEY ("organiserID") REFERENCES "Organiser"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrganiserEvent" ADD CONSTRAINT "OrganiserEvent_eventID_fkey" FOREIGN KEY ("eventID") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "VolunteerEvent" ADD CONSTRAINT "VolunteerEvent_volunteerID_fkey" FOREIGN KEY ("volunteerID") REFERENCES "Volunteer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "VolunteerEvent" ADD CONSTRAINT "VolunteerEvent_eventID_fkey" FOREIGN KEY ("eventID") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EventAttendance" ADD CONSTRAINT "EventAttendance_eventID_fkey" FOREIGN KEY ("eventID") REFERENCES "Event"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

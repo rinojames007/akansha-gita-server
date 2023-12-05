@@ -1,6 +1,6 @@
 import * as express from "express";
 import bcrypt from "bcrypt";
-import { PrismaClient } from "@prisma/client";
+import {PrismaClient} from "@prisma/client";
 import jwt from "jsonwebtoken";
 
 const router = express.Router();
@@ -34,6 +34,9 @@ router.post(`/${process.env.VOLUNTEER_ROUTE}/signup`, (req, res) => {
         }
       });
     });
+    res.status(401).json({
+      message: "email address already exists"
+    })
   } catch (error) {
     console.log("something broke ", e);
   }
@@ -61,6 +64,9 @@ router.post(`/${process.env.VOLUNTEER_ROUTE}/signup`, async (req, res) => {
       });
     }
   }
+  res.status(401).json({
+    message: "failed to find user"
+  })
 });
 
 export default router;
