@@ -103,7 +103,7 @@ model Participant {
   branch      String
   gender      String
   phone       Int
-  email       String
+  email       String            @unique
   stay        stayEvent
   events      Event[]
   attendances EventAttendance[]
@@ -135,6 +135,6 @@ model EventAttendance {
 }
 
 model User {
-  email    String @unique
+  email    String @id @unique
   password String
 }

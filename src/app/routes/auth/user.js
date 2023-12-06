@@ -2,6 +2,7 @@ import * as express from "express";
 import bcrypt from "bcrypt";
 import {PrismaClient} from "@prisma/client";
 import jwt from "jsonwebtoken";
+import emailValidator from "../../../services/emailValidator.js";
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -15,29 +16,36 @@ router.use((req, res, next) => {
 router.post("/signup", (req, res) => {
   try {
     const { email, password } = req.body;
-    const saltRounds = 6;
-    bcrypt.genSalt(saltRounds, function (err, salt) {
-      bcrypt.hash(password, salt, async function (err, hash) {
-        const newUser = await prisma.user.create({
-          data: {
-            email: email,
-            password: hash,
-          },
-        });
-        if (newUser) {
-          const token = jwt.sign(email, SECRET, { expiresIn: '2 days' });
-          res.status(200).json({
-            message: "user added successfully",
-            token: token,
+    if (emailValidator(email)) {
+      const saltRounds = 6;
+      bcrypt.genSalt(saltRounds, function (err, salt) {
+        bcrypt.hash(password, salt, async function (err, hash) {
+          const newUser = await prisma.user.create({
+            data: {
+              email: email,
+              password: hash,
+            },
           });
-        }
+          if (newUser) {
+            const token = jwt.sign({ email: email }, SECRET, {
+              expiresIn: "2 days",
+            });
+            res.status(200).json({
+              message: "user added successfully",
+              token: token,
+            });
+          }
+        });
       });
-    });
-    res.status(401).json({
-      message: "email address already exists"
-    })
+    } else {
+      res.status(401).json({
+        message: "invalid email provided",
+      });
+    }
   } catch (error) {
-    console.log("something broke ", e);
+    res.status(401).json({
+      message: "user already exist"
+    })
   }
 });
 
@@ -45,7 +53,7 @@ router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
   const user = await prisma.user.findUnique({
     where: {
-      email: email
+      email: email,
     },
   });
   if (user) {
@@ -62,10 +70,14 @@ router.post("/signin", async (req, res) => {
         message: "invalid credentials",
       });
     }
+  } else {
+    res.status(401).json({
+      message: "failed to find user"
+    })
   }
-  /*res.status(401).json({
-    message: "failed to find user"
-  })*/
+
 });
 
 export default router;
+
+
