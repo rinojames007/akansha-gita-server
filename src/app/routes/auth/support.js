@@ -17,14 +17,13 @@ router.post("/signup", (req, res) => {
     try {
         const { email, password, role } = req.body;
         if (emailValidator(email)) {
-            const saltRounds = 3;
+            const saltRounds = 6;
             bcrypt.genSalt(saltRounds, function(err, salt) {
                 bcrypt.hash(password, salt, async function(err, hash) {
-                    const newUser = await prisma.user.create({
+                    const newUser = await prisma.helpSupport.create({
                         data: {
                             email: email,
                             password: hash,
-                            role: role || 'student' 
                         },
                     });
                     if (newUser) {
@@ -53,7 +52,7 @@ router.post("/signup", (req, res) => {
 router.post("/signin", async (req, res) => {
     const { email, password } = req.body;
     try {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.helpSupport.findUnique({
             where: {
                 email: email,
             },
@@ -83,5 +82,4 @@ router.post("/signin", async (req, res) => {
 });
 
 export default router;
-
 

@@ -12,35 +12,6 @@ router.use((req, res, next) => {
   next();
 });
 
-router.post("/signup", (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const saltRounds = 6;
-    bcrypt.genSalt(saltRounds, function (err, salt) {
-      bcrypt.hash(password, salt, async function (err, hash) {
-        const newUser = await prisma.coordinator.create({
-          data: {
-            email: email,
-            password: hash,
-          },
-        });
-        if (newUser) {
-          const token = jwt.sign(email, SECRET, { expiresIn: '2 days' });
-          res.status(200).json({
-            message: "user added successfully",
-            token: token,
-          });
-        }
-      });
-    });
-    res.status(401).json({
-      message: "email address already exists"
-    })
-  } catch (error) {
-    console.log("something broke ", e);
-  }
-});
-
 router.post("/signin", async (req, res) => {
   const { email, password } = req.body;
   const user = await prisma.coordinator.findUnique({

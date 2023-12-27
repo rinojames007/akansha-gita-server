@@ -1,5 +1,4 @@
 import * as express from "express";
-import {userAuthentication} from "../../../services/middlewares.js";
 import {PrismaClient} from "@prisma/client";
 
 const router = express.Router();
@@ -14,7 +13,7 @@ router.use((req, res, next) => {
 /**
  * CREATE AN EVENT
  */
-router.post("/create", userAuthentication, async (req, res) => {
+router.post("/create",  async (req, res) => {
   const {
     day,
     name,
@@ -53,7 +52,7 @@ router.post("/create", userAuthentication, async (req, res) => {
 /**
  * UPDATING A SPECIFIC EVENT DETAILS
  */
-router.patch("/:eventID", userAuthentication, async (req, res) => {
+router.patch("/:eventID",  async (req, res) => {
   const eventID = req.params.eventID;
     const {
       day,
@@ -97,7 +96,7 @@ router.patch("/:eventID", userAuthentication, async (req, res) => {
 /**
  * DELETING AN EVENT
  */
-router.delete("/:eventID", userAuthentication, async (req, res) => {
+router.delete("/:eventID",  async (req, res) => {
   const eventID = req.params.eventID;
     try {
       const entry = await prisma.event.delete({
