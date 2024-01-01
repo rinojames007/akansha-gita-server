@@ -28,9 +28,15 @@ model Event {
 }
 
 model Incharge {
-    id       Int             @id @default(autoincrement())
+    id       String          @id
+    role     String
+    eventDay EventDay
+    name     String
+    roll     String
     email    String          @unique
     password String
+    phone    String
+    wpNo     String
     events   InchargeEvent[]
 }
 
@@ -38,11 +44,42 @@ model InchargeEvent {
     id         Int      @id @default(autoincrement())
     incharge   Incharge @relation(fields: [inchargeID], references: [id])
     event      Event    @relation(fields: [eventID], references: [id])
-    inchargeID Int
+    inchargeID String
     eventID    String
+    eventName  String
 
     @@unique([inchargeID, eventID])
 }
+
+model Organiser {
+    id       String          @id
+    role     String
+    eventDay EventDay
+    name     String
+    roll     String
+    email    String          @unique
+    password String
+    phone    String
+    wpNo     String
+    events   OrganiserEvent[]
+}
+
+model OrganiserEvent {
+    id          Int       @id @default(autoincrement())
+    organiser   Organiser @relation(fields: [organiserID], references: [id])
+    event       Event     @relation(fields: [eventID], references: [id])
+    organiserID String
+    eventID     String
+}
+
+model Coordinator {
+    id       Int                @id @default(autoincrement())
+    name     String
+    email    String             @unique
+    password String
+    events   CoordinatorEvent[]
+}
+
 
 model CoordinatorEvent {
     id            Int         @id @default(autoincrement())
@@ -54,30 +91,10 @@ model CoordinatorEvent {
     @@unique([coordinatorID, eventID])
 }
 
-model Organiser {
-    id       Int              @id @default(autoincrement())
-    email    String           @unique
-    password String
-    events   OrganiserEvent[]
-}
-
-model OrganiserEvent {
-    id          Int       @id @default(autoincrement())
-    organiser   Organiser @relation(fields: [organiserID], references: [id])
-    event       Event     @relation(fields: [eventID], references: [id])
-    organiserID Int
-    eventID     String
-}
-
-model Coordinator {
-    id       Int                @id @default(autoincrement())
-    email    String             @unique
-    password String
-    events   CoordinatorEvent[]
-}
 
 model Volunteer {
     id       Int              @id @default(autoincrement())
+    name     String
     email    String           @unique
     password String
     events   VolunteerEvent[]
@@ -158,8 +175,7 @@ model PushSubscription {
     p256dh         String
 }
 
-
 model HelpSupport {
-    email String @id @unique
+    email    String @id @unique
     password String
 }
